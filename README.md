@@ -1,6 +1,6 @@
 # Swift Android Samples
 
-This repository contains sample apps that use the [Swift Android SDK](https://github.com/finagolfin/swift-android-sdk).
+This repository contains sample apps that use the [Swift Android SDK](https://github.com/swift-android-sdk/swift-android-sdk/releases).
 
 # Build and run
 
