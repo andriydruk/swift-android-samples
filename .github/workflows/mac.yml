@@ -1,0 +1,31 @@
+name: macOS
+
+on: [pull_request]
+
+jobs:
+  build:
+
+    runs-on: macos-15
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install swiftly
+      shell: bash
+      run: curl -O https://download.swift.org/swiftly/darwin/swiftly.pkg &&
+        installer -pkg swiftly.pkg -target CurrentUserHomeDirectory &&
+        ~/.swiftly/bin/swiftly init --quiet-shell-followup &&
+        . "${SWIFTLY_HOME_DIR:-$HOME/.swiftly}/env.sh" &&
+        hash -r
+    
+    - name: Install swift andorid sdk
+      shell: bash
+      run: source ~/.swiftly/env.sh &&
+        swiftly install 6.2-snapshot-2025-08-09-a &&
+        swift sdk install https://github.com/swift-android-sdk/swift-android-sdk/releases/download/6.2-DEVELOPMENT-SNAPSHOT-2025-08-09-a-2-g5cc6f245d0d/swift-6.2-DEVELOPMENT-SNAPSHOT-2025-08-09-a-2-g5cc6f245d0d-android-0.1.artifactbundle.tar.gz --checksum ad1ab1124adda37b762006298936a420229e32592588ec26d44c23b8d22d4dc2 &&
+        ~/Library/org.swift.swiftpm/swift-sdks/swift-6.2-DEVELOPMENT-SNAPSHOT-2025-08-09-a-2-g5cc6f245d0d-android-0.1.artifactbundle/swift-android/scripts/setup-android-sdk.sh
+
+    - name: Assemble all projects
+      shell: bash
+      run: ./gradlew assemble
+
