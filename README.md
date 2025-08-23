@@ -1,5 +1,11 @@
 # Swift Android Samples
 
+[![macOS](https://github.com/andriydruk/swift-android-samples/actions/workflows/mac.yml/badge.svg)](https://github.com/andriydruk/swift-android-samples/actions/workflows/mac.yml)
+[![Linux](https://github.com/andriydruk/swift-android-samples/actions/workflows/linux.yml/badge.svg)](https://github.com/andriydruk/swift-android-samples/actions/workflows/linux.yml)
+[![Swift](https://img.shields.io/badge/swift-6.2%20snapshot-orange)](https://github.com/swift-android-sdk/swift-android-sdk/releases)
+[![Android API](https://img.shields.io/badge/Android%20API-29+-green)](https://developer.android.com/about/versions/10)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 This repository contains sample apps that use the [Swift Android SDK](https://github.com/swift-android-sdk/swift-android-sdk/releases).
 
 # Build and run
