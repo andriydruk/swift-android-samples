@@ -67,10 +67,12 @@ fun getSwiftlyPath(): String {
     // Try to find swiftly in common locations
     val homeDir = System.getProperty("user.home")
     val possiblePaths = listOf(
-        "$homeDir/.local/bin/swiftly",
         "$homeDir/.swiftly/bin/swiftly",
+        "$homeDir/.local/share/swiftly/bin/swiftly",
+        "$homeDir/.local/bin/swiftly",
         "/usr/local/bin/swiftly",
-        "/opt/homebrew/bin/swiftly"
+        "/opt/homebrew/bin/swiftly",
+        "/root/.local/share/swiftly/bin/swiftly"
     )
 
     for (path in possiblePaths) {
@@ -83,12 +85,34 @@ fun getSwiftlyPath(): String {
     return "swiftly"
 }
 
+fun getSwiftSDKPath(): String {
+    // First check if custom path is provided
+    swiftConfig.swiftSDKPath?.let {
+        return it
+    }
+
+    // Try to find Swift SDK in common locations
+    val homeDir = System.getProperty("user.home")
+    val possiblePaths = listOf(
+        "$homeDir/Library/org.swift.swiftpm/swift-sdks/",
+        "$homeDir/.config/swiftpm/swift-sdks/",
+        "$homeDir/.swiftpm/swift-sdks/",
+        "/root/.swiftpm/swift-sdks/"
+    )
+
+    for (path in possiblePaths) {
+        if (file(path).exists()) {
+            return path
+        }
+    }
+
+    throw GradleException("Swift SDK path not found. Please set swiftConfig.swiftSDKPath or install the Swift SDK for Android.")
+}
+
 // Helper function to get Swift resources path
 fun getSwiftResourcesPath(arch: Arch): String {
-    val homeDir = System.getProperty("user.home")
-    val swiftSdkPath = swiftConfig.swiftSDKPath ?: "$homeDir/Library/org.swift.swiftpm/swift-sdks/"
     val sdkVersion = swiftConfig.androidSdkVersion
-    return "$swiftSdkPath/swift-${sdkVersion}.artifactbundle/swift-android/swift-resources/usr/lib/swift_static-${arch.swiftArch}/"
+    return "${getSwiftSDKPath()}/swift-${sdkVersion}.artifactbundle/swift-android/swift-resources/usr/lib/swift_static-${arch.swiftArch}/"
 }
 
 // Function to create Swift build task

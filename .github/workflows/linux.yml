@@ -1,0 +1,70 @@
+name: Linux
+
+on: [pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:24.04
+      options: --user root
+    
+    env:
+      ANDROID_NDK_HOME: /opt/android-ndk
+      JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+      ANDROID_HOME: /opt/android-sdk
+      ANDROID_SDK_ROOT: /opt/android-sdk
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install system dependencies
+      shell: bash
+      run: |
+        apt-get update
+        apt-get install -y curl tar gzip sudo wget ca-certificates unzip gpg libcurl4-openssl-dev binutils git gnupg2 libc6-dev libedit2 libgcc-13-dev libpython3-dev libstdc++-13-dev libxml2-dev libncurses-dev libz3-dev pkg-config tzdata zlib1g-dev openjdk-17-jdk
+    
+    - name: Install Android NDK r27d
+      shell: bash
+      run: |
+        cd /opt
+        wget https://dl.google.com/android/repository/android-ndk-r27d-linux.zip
+        unzip android-ndk-r27d-linux.zip
+        mv android-ndk-r27d android-ndk
+    
+    - name: Install Android SDK
+      shell: bash
+      run: |
+        cd /opt
+        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+        unzip commandlinetools-linux-11076708_latest.zip
+        mkdir -p android-sdk/cmdline-tools
+        mv cmdline-tools android-sdk/cmdline-tools/latest
+        export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+        yes | sdkmanager --licenses || true
+        sdkmanager "platforms;android-36" "build-tools;36.0.0"
+    
+    - name: Install swiftly
+      shell: bash
+      run: |
+        curl -O https://download.swift.org/swiftly/linux/swiftly-$(uname -m).tar.gz
+        tar zxf swiftly-$(uname -m).tar.gz
+        ./swiftly init --quiet-shell-followup
+        source /root/.local/share/swiftly/env.sh
+        hash -r
+    
+    - name: Install swift android sdk
+      shell: bash
+      run: |
+        source /root/.local/share/swiftly/env.sh
+        swiftly install 6.2-snapshot-2025-08-09-a
+        swift sdk install https://github.com/swift-android-sdk/swift-android-sdk/releases/download/6.2-DEVELOPMENT-SNAPSHOT-2025-08-09-a-2-g5cc6f245d0d/swift-6.2-DEVELOPMENT-SNAPSHOT-2025-08-09-a-2-g5cc6f245d0d-android-0.1.artifactbundle.tar.gz --checksum ad1ab1124adda37b762006298936a420229e32592588ec26d44c23b8d22d4dc2
+        /root/.swiftpm/swift-sdks/swift-6.2-DEVELOPMENT-SNAPSHOT-2025-08-09-a-2-g5cc6f245d0d-android-0.1.artifactbundle/swift-android/scripts/setup-android-sdk.sh
+
+    - name: Assemble all projects
+      shell: bash
+      run: |
+        export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+        ./gradlew assemble
+
