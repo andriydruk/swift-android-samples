@@ -1,0 +1,5 @@
+module AndroidOpenGL [system] {
+    header "umbrella.h"
+    link "EGL"
+    link "GLESv1_CM"
+}
