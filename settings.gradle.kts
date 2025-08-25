@@ -20,4 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Swift Android Samples"
-include(":hello-swift", "hello-swift-callback")
+include(":hello-swift")
+include(":hello-swift-callback")
+include(":native-activity")
