@@ -189,7 +189,6 @@ fun createCopySwiftLibrariesTask(
         dependsOn(swiftBuildTask)
 
         // Copy c++ shared runtime libraries
-        val homeDir = System.getProperty("user.home")
         from("${getSwiftSDKPath()}/swift-${swiftConfig.androidSdkVersion}.artifactbundle/swift-android/ndk-sysroot/usr/lib/${arch.triple}") {
             include("libc++_shared.so")
         }
@@ -277,7 +276,22 @@ project.afterEvaluate {
                 }
             })
         } catch (e: NoSuchMethodException) {
-            println("No applicationVariants found...")
+            // No applicationVariants found...
+        }
+
+        // Try libraryVariants (for libraries)
+        try {
+            val libraryVariantsMethod = androidExtension::class.java.getMethod("getLibraryVariants")
+            val variants = libraryVariantsMethod.invoke(androidExtension)
+            val allMethod = variants::class.java.getMethod("all", groovy.lang.Closure::class.java)
+
+            allMethod.invoke(variants, object : groovy.lang.Closure<Unit>(this) {
+                fun doCall(variant: Any) {
+                    handleVariant(variant)
+                }
+            })
+        } catch (e: NoSuchMethodException) {
+            // No libraryVariants found..
         }
     } else {
         throw GradleException("Android extension not found. Make sure to apply this script after the Android plugin.")
