@@ -14,8 +14,8 @@ data class SwiftConfig(
     var releaseExtraBuildFlags: List<String> = emptyList(),
     var swiftlyPath: String? = null, // Optional custom swiftly path
     var swiftSDKPath: String? = null, // Optional custom Swift SDK path
-    var swiftVersion: String = "6.2-snapshot-2025-08-09-a", // Swift version
-    var androidSdkVersion: String = "6.2-DEVELOPMENT-SNAPSHOT-2025-08-09-a-2-g5cc6f245d0d-android-0.1" // SDK version
+    var swiftVersion: String = "6.2.0", // Swift version
+    var androidSdkVersion: String = "6.2-RELEASE-android-0.1" // SDK version
 )
 
 // Architecture definitions
@@ -81,8 +81,7 @@ fun getSwiftlyPath(): String {
         }
     }
 
-    // If not found, try to use it from PATH (will fail with better error message)
-    return "swiftly"
+    throw GradleException("Switly path not found. Please set swiftConfig.swiftlyPath or install the swiftly.")
 }
 
 fun getSwiftSDKPath(): String {
@@ -191,8 +190,7 @@ fun createCopySwiftLibrariesTask(
 
         // Copy c++ shared runtime libraries
         val homeDir = System.getProperty("user.home")
-        val swiftSdkPath = swiftConfig.swiftSDKPath ?: "$homeDir/Library/org.swift.swiftpm/swift-sdks/"
-        from("$swiftSdkPath/swift-${swiftConfig.androidSdkVersion}.artifactbundle/swift-android/ndk-sysroot/usr/lib/${arch.triple}") {
+        from("${getSwiftSDKPath()}/swift-${swiftConfig.androidSdkVersion}.artifactbundle/swift-android/ndk-sysroot/usr/lib/${arch.triple}") {
             include("libc++_shared.so")
         }
 
