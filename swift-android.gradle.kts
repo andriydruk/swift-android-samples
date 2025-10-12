@@ -93,10 +93,10 @@ fun getSwiftSDKPath(): String {
     // Try to find Swift SDK in common locations
     val homeDir = System.getProperty("user.home")
     val possiblePaths = listOf(
-        "$homeDir/Library/org.swift.swiftpm/swift-sdks/",
-        "$homeDir/.config/swiftpm/swift-sdks/",
-        "$homeDir/.swiftpm/swift-sdks/",
-        "/root/.swiftpm/swift-sdks/"
+        "$homeDir/Library/org.swift.swiftpm/swift-sdks",
+        "$homeDir/.config/swiftpm/swift-sdks",
+        "$homeDir/.swiftpm/swift-sdks",
+        "/root/.swiftpm/swift-sdks"
     )
 
     for (path in possiblePaths) {
@@ -163,6 +163,7 @@ fun createSwiftBuildTask(
 
             println("Building Swift for ${arch.variantName} ${if (isDebug) "Debug" else "Release"}")
             println("Using swiftly: $swiftlyPath")
+            println("Resourse path: $resourcesPath")
             println("Swift SDK: $sdkName")
         }
     }
